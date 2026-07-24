@@ -24,6 +24,7 @@ type ProviderConfig struct {
 	BaseURL              string            `yaml:"base_url,omitempty"`
 	AuthenticationType   string            `yaml:"authentication_type,omitempty"`
 	EnvironmentVariables []string          `yaml:"environment_variables,omitempty"`
+	UsesKeyring          bool              `yaml:"uses_keyring"`
 	DefaultHeaders       map[string]string `yaml:"default_headers,omitempty"`
 	Metadata             map[string]string `yaml:"metadata,omitempty"`
 	CreatedAt            string            `yaml:"created_at,omitempty"`

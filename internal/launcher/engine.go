@@ -3,9 +3,11 @@ package launcher
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/prayangshuuu/relay/internal/config"
 	"github.com/prayangshuuu/relay/internal/env"
+	"github.com/prayangshuuu/relay/internal/keyring"
 	"github.com/prayangshuuu/relay/internal/profile"
 	"github.com/prayangshuuu/relay/internal/provider"
 	"github.com/prayangshuuu/relay/internal/shell"
@@ -60,20 +62,24 @@ func (e *Engine) Launch(cfg Config) error {
 	var provName string
 	if activeProvider != nil {
 		provName = activeProvider.Name()
-		// Safe cast to access config struct to get EnvironmentVariables keys
-		// In a real app we'd load actual values from keyring/env for those keys
 		if defaultProv, ok := activeProvider.(interface{ Config() config.ProviderConfig }); ok {
-			// (Mock implementation: we just assume the variables are in the current host environment
-			// or we prompt. Since relay doesn't persist secrets, if the secret is in OS env, we use it.
-			// Actually the prompt says "Generate Environment Variables")
-			// For this implementation, we will mock setting them to a placeholder or passing them through.
-			_ = defaultProv
-		}
+			pCfg := defaultProv.Config()
 
-		// For now, if activeProvider is a DefaultProvider, we get its config
-		if dp, ok := activeProvider.(interface{ Config() config.ProviderConfig }); ok {
-			// Note: provider.ProviderConfig isn't defined here, we will fix the interface check below.
-			_ = dp
+			for _, envLine := range pCfg.EnvironmentVariables {
+				parts := strings.SplitN(envLine, "=", 2)
+				if len(parts) == 2 {
+					injections[parts[0]] = parts[1]
+				}
+			}
+
+			if pCfg.UsesKeyring {
+				km := keyring.NewManager()
+				secret, err := km.Get(pCfg.ID)
+				if err == nil && secret != "" {
+					injections["API_KEY"] = secret
+					injections[strings.ToUpper(pCfg.Type)+"_API_KEY"] = secret
+				}
+			}
 		}
 	}
 

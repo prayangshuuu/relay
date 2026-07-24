@@ -6,6 +6,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/prayangshuuu/relay/internal/config"
+	"github.com/prayangshuuu/relay/internal/keyring"
 	"github.com/spf13/cobra"
 )
 
@@ -43,7 +44,12 @@ var instanceCreateCmd = &cobra.Command{
 		}
 
 		if apiKey != "" {
-			cfg.EnvironmentVariables = []string{fmt.Sprintf("API_KEY=%s", apiKey)}
+			km := keyring.NewManager()
+			if err := km.Set(instanceName, apiKey); err != nil {
+				fmt.Fprintf(os.Stderr, "Error saving key to OS keyring: %v\n", err)
+				os.Exit(1)
+			}
+			cfg.UsesKeyring = true
 		}
 
 		if err := manager.Add(cfg); err != nil {
