@@ -12,11 +12,17 @@ type GlobalConfig struct {
 
 // ProviderConfig represents the schema for files in providers/
 type ProviderConfig struct {
-	Name        string            `yaml:"name"`
-	Type        string            `yaml:"type"` // e.g., "anthropic", "openrouter"
-	BaseURL     string            `yaml:"base_url,omitempty"`
-	Environment map[string]string `yaml:"environment,omitempty"`
-	Metadata    map[string]string `yaml:"metadata,omitempty"`
+	ID                   string            `yaml:"id"`
+	Name                 string            `yaml:"name"`
+	Type                 string            `yaml:"type"` // e.g., "anthropic", "openrouter"
+	BaseURL              string            `yaml:"base_url,omitempty"`
+	AuthenticationType   string            `yaml:"authentication_type,omitempty"`
+	EnvironmentVariables []string          `yaml:"environment_variables,omitempty"`
+	DefaultHeaders       map[string]string `yaml:"default_headers,omitempty"`
+	Metadata             map[string]string `yaml:"metadata,omitempty"`
+	CreatedAt            string            `yaml:"created_at,omitempty"`
+	UpdatedAt            string            `yaml:"updated_at,omitempty"`
+	Enabled              bool              `yaml:"enabled"`
 }
 
 // ToolConfig represents the schema for files in tools/
