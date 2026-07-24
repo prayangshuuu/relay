@@ -35,9 +35,18 @@ type ToolConfig struct {
 
 // ProfileConfig represents the schema for files in profiles/
 type ProfileConfig struct {
-	Name        string            `yaml:"name"`
-	Tool        string            `yaml:"tool"`
-	Provider    string            `yaml:"provider"`
-	Model       string            `yaml:"model"`
+	Name           string            `yaml:"name"`
+	Tool           string            `yaml:"tool"`
+	Provider       string            `yaml:"provider"`
+	Model          string            `yaml:"model"`
+	Environment    map[string]string `yaml:"environment,omitempty"`
+	WorkspaceRules map[string]string `yaml:"workspace_rules,omitempty"`
+	LaunchArgs     []string          `yaml:"launch_args,omitempty"`
+}
+
+// WorkspaceConfig represents overrides for a specific project directory.
+type WorkspaceConfig struct {
+	Path        string            `yaml:"path"`
+	Profile     string            `yaml:"profile"`
 	Environment map[string]string `yaml:"environment,omitempty"`
 }

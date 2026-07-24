@@ -38,7 +38,7 @@ func (m *Manager) Get(name string) (Tool, error) {
 	path := filepath.Join(m.paths.ToolsDir(), fmt.Sprintf("%s.yaml", name))
 	err := m.storage.ReadYAML(path, &cfg)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			// Fallback: If not found, create an on-the-fly tool based on the name.
 			// This allows 'relay run claude' to work without a strict tools/claude.yaml
 			return &DefaultTool{cfg: config.ToolConfig{
