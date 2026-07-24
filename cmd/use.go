@@ -44,7 +44,7 @@ var useCmd = &cobra.Command{
 		provMgr := provider.NewManager(paths, store)
 		toolMgr := tool.NewManager(paths, store)
 		profMgr := profile.NewManager(paths, store, provMgr, toolMgr)
-		resolver := switcher.NewResolver(paths)
+		resolver := switcher.NewResolver(paths, globalCfg.Aliases)
 
 		// Record initial state for undo
 		undoState := UndoState{
@@ -129,6 +129,35 @@ var useCmd = &cobra.Command{
 				pCfg.Tool = match.Name
 				mutatedProfiles[activeProf] = pCfg
 				globalCfg.RecentTools = prependUnique(globalCfg.RecentTools, match.Name, 10)
+
+			case switcher.TypeModel:
+				activeProf := globalCfg.CurrentProfile
+				if activeProf == "" {
+					activeProf = "default"
+				}
+
+				p, err := profMgr.Get(activeProf)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error fetching active profile '%s': %v\n", activeProf, err)
+					os.Exit(1)
+				}
+
+				var pCfg config.ProfileConfig
+				if cp, ok := p.(interface{ Config() config.ProfileConfig }); ok {
+					pCfg = cp.Config()
+				} else {
+					fmt.Fprintln(os.Stderr, "Error: unsupported profile type")
+					os.Exit(1)
+				}
+
+				if _, exists := undoState.Profiles[activeProf]; !exists {
+					undoState.Profiles[activeProf] = pCfg
+				}
+
+				fmt.Printf("Switched model to '%s' (in profile '%s')\n", match.Name, activeProf)
+				pCfg.Model = match.Name
+				mutatedProfiles[activeProf] = pCfg
+				globalCfg.RecentModels = prependUnique(globalCfg.RecentModels, match.Name, 10)
 			}
 		}
 

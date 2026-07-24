@@ -3,15 +3,17 @@ package config
 
 // GlobalConfig represents the schema for config.yaml
 type GlobalConfig struct {
-	Version         int      `yaml:"version"`
-	CurrentProfile  string   `yaml:"current_profile"`
-	DefaultTool     string   `yaml:"default_tool"`
-	RecentProfiles  []string `yaml:"recent_profiles,omitempty"`
-	RecentProviders []string `yaml:"recent_providers,omitempty"`
-	RecentTools     []string `yaml:"recent_tools,omitempty"`
-	UndoStack       []string `yaml:"undo_stack,omitempty"`
-	CreatedAt       string   `yaml:"created_at,omitempty"`
-	UpdatedAt       string   `yaml:"updated_at,omitempty"`
+	Version         int               `yaml:"version"`
+	CurrentProfile  string            `yaml:"current_profile"`
+	DefaultTool     string            `yaml:"default_tool"`
+	Aliases         map[string]string `yaml:"aliases,omitempty"`
+	RecentProfiles  []string          `yaml:"recent_profiles,omitempty"`
+	RecentProviders []string          `yaml:"recent_providers,omitempty"`
+	RecentTools     []string          `yaml:"recent_tools,omitempty"`
+	RecentModels    []string          `yaml:"recent_models,omitempty"`
+	UndoStack       []string          `yaml:"undo_stack,omitempty"`
+	CreatedAt       string            `yaml:"created_at,omitempty"`
+	UpdatedAt       string            `yaml:"updated_at,omitempty"`
 }
 
 // ProviderConfig represents the schema for files in providers/

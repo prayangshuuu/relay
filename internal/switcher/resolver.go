@@ -16,6 +16,7 @@ const (
 	TypeProfile  EntityType = "profile"
 	TypeProvider EntityType = "provider"
 	TypeTool     EntityType = "tool"
+	TypeModel    EntityType = "model"
 )
 
 type Match struct {
@@ -24,11 +25,12 @@ type Match struct {
 }
 
 type Resolver struct {
-	paths config.PathManager
+	paths   config.PathManager
+	aliases map[string]string
 }
 
-func NewResolver(paths config.PathManager) *Resolver {
-	return &Resolver{paths: paths}
+func NewResolver(paths config.PathManager, aliases map[string]string) *Resolver {
+	return &Resolver{paths: paths, aliases: aliases}
 }
 
 func (r *Resolver) exists(dir, name string) bool {
@@ -37,6 +39,20 @@ func (r *Resolver) exists(dir, name string) bool {
 }
 
 func (r *Resolver) Resolve(arg string) (Match, error) {
+	// 1. Resolve Aliases
+	visited := make(map[string]bool)
+	for {
+		if target, ok := r.aliases[arg]; ok {
+			if visited[target] {
+				break // prevent infinite alias loops
+			}
+			visited[target] = true
+			arg = target
+		} else {
+			break
+		}
+	}
+
 	var matches []Match
 
 	// Check Profile
@@ -54,11 +70,9 @@ func (r *Resolver) Resolve(arg string) (Match, error) {
 		matches = append(matches, Match{Name: arg, Type: TypeTool})
 	}
 
-	// Special case: if absolutely nothing matches, we can assume they are switching to an
-	// on-the-fly tool, but only if they explicitly specify that behavior.
-	// For 'relay use', it's safer to require the tool configuration to exist or error out.
+	// Fallback: If nothing on disk matches, assume it's a Model override
 	if len(matches) == 0 {
-		return Match{}, fmt.Errorf("could not resolve '%s' to any profile, provider, or tool", arg)
+		return Match{Name: arg, Type: TypeModel}, nil
 	}
 
 	if len(matches) == 1 {

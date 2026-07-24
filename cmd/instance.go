@@ -12,13 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var providerCmd = &cobra.Command{
-	Use:   "provider",
-	Short: "Manage AI providers",
+var instanceCmd = &cobra.Command{
+	Use:   "instance",
+	Short: "Manage AI provider instances",
 }
 
 func init() {
-	rootCmd.AddCommand(providerCmd)
+	rootCmd.AddCommand(instanceCmd)
 }
 
 func newProviderManager() (*provider.Manager, error) {
