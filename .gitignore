@@ -1,0 +1,42 @@
+# Binaries
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build
+/build
+/out
+
+# Test
+*.test
+coverage.*
+*.coverprofile
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Claude
+.claude/
+
+# Relay local config
+.relay/
+
+# Logs
+*.log
+
+# Temp
+tmp/
+temp/
