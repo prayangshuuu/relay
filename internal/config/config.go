@@ -1,36 +1,37 @@
 // Package config defines the configuration formats and YAML schemas for Relay.
-// Future responsibilities include parsing global configuration files located in
-// ~/.relay/, and maintaining the schema representations for providers, profiles,
-// and tools without implementing the execution logic.
 package config
 
-// GlobalConfig represents the schema for ~/.relay/config.yaml
+// GlobalConfig represents the schema for config.yaml
 type GlobalConfig struct {
-	DefaultProfile string `yaml:"default_profile"`
-	Telemetry      bool   `yaml:"telemetry"` // Expected to be false per architecture principles
+	Version        int    `yaml:"version"`
+	CurrentProfile string `yaml:"current_profile"`
+	DefaultTool    string `yaml:"default_tool"`
+	CreatedAt      string `yaml:"created_at,omitempty"`
+	UpdatedAt      string `yaml:"updated_at,omitempty"`
 }
 
-// ProviderConfig represents the schema for files in ~/.relay/providers/
+// ProviderConfig represents the schema for files in providers/
 type ProviderConfig struct {
-	Name     string            `yaml:"name"`
-	Type     string            `yaml:"type"` // e.g., "anthropic", "openrouter"
-	EnvVars  map[string]string `yaml:"env"`
-	Metadata map[string]string `yaml:"metadata,omitempty"`
+	Name        string            `yaml:"name"`
+	Type        string            `yaml:"type"` // e.g., "anthropic", "openrouter"
+	BaseURL     string            `yaml:"base_url,omitempty"`
+	Environment map[string]string `yaml:"environment,omitempty"`
+	Metadata    map[string]string `yaml:"metadata,omitempty"`
 }
 
-// ToolConfig represents the schema for files in ~/.relay/tools/
+// ToolConfig represents the schema for files in tools/
 type ToolConfig struct {
-	Name         string   `yaml:"name"`
-	Executable   string   `yaml:"executable"`
-	SupportedEnv []string `yaml:"supported_env"`
-	LaunchMethod string   `yaml:"launch_method"`
+	Name        string            `yaml:"name"`
+	Executable  string            `yaml:"executable"`
+	Arguments   []string          `yaml:"arguments,omitempty"`
+	Environment map[string]string `yaml:"environment,omitempty"`
 }
 
-// ProfileConfig represents the schema for files in ~/.relay/profiles/
+// ProfileConfig represents the schema for files in profiles/
 type ProfileConfig struct {
-	Name      string            `yaml:"name"`
-	Tool      string            `yaml:"tool"`
-	Provider  string            `yaml:"provider"`
-	Model     string            `yaml:"model"`
-	Overrides map[string]string `yaml:"overrides,omitempty"`
+	Name        string            `yaml:"name"`
+	Tool        string            `yaml:"tool"`
+	Provider    string            `yaml:"provider"`
+	Model       string            `yaml:"model"`
+	Environment map[string]string `yaml:"environment,omitempty"`
 }
